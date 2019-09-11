@@ -7,16 +7,12 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | activation\_policy | The activation policy for the master instance. Can be either `ALWAYS`, `NEVER` or `ON\_DEMAND`. | string | `"ALWAYS"` | no |
-| additional\_databases | A list of databases to be created in your cluster | list | `<list>` | no |
-| additional\_users | A list of users to be created in your cluster | list | `<list>` | no |
 | authorized\_gae\_applications | The list of authorized App Engine project names | list | `<list>` | no |
 | backup\_configuration | The backup configuration block of the Cloud SQL resources This argument will be passed through the master instance directrly.<br><br>See \[more details\]\(https://www.terraform.io/docs/providers/google/r/sql\_database\_instance.html\). | map | `<map>` | no |
 | create\_timeout | The optional timout that is applied to limit long database creates. | string | `"10m"` | no |
 | database\_flags | The database flags for the master instance. See \[more details\]\(https://cloud.google.com/sql/docs/mysql/flags\) | list | `<list>` | no |
 | database\_version | The database version to use | string | n/a | yes |
-| db\_charset | The charset for the default database | string | `""` | no |
-| db\_collation | The collation for the default database. Example: 'utf8\_general\_ci' | string | `""` | no |
-| db\_name | The name of the default database to create | string | `"default"` | no |
+| databases | A list of databases to be created in your cluster | list | `<list>` | no |
 | delete\_timeout | The optional timout that is applied to limit long database deletes. | string | `"10m"` | no |
 | disk\_autoresize | Configuration to increase storage size | string | `"true"` | no |
 | disk\_size | The disk size for the master instance | string | `"10"` | no |
@@ -67,10 +63,7 @@
 | region | The region of the Cloud SQL resources | string | `"us-central1"` | no |
 | tier | The tier for the master instance. | string | `"db-n1-standard-1"` | no |
 | update\_timeout | The optional timout that is applied to limit long database updates. | string | `"10m"` | no |
-| user\_host | The host for the default user | string | `"%"` | no |
-| user\_labels | The key/value labels for the master instances. | map | `<map>` | no |
-| user\_name | The name of the default user | string | `"default"` | no |
-| user\_password | The password for the default user. If not set, a random one will be generated and available in the generated\_user\_password output variable. | string | `""` | no |
+| users | A list of users to be created in your cluster | list | `<list>` | no |
 | zone | The zone for the master instance, it should be something like: `a`, `c`. | string | n/a | yes |
 
 ## Outputs
@@ -83,7 +76,6 @@
 | failover-replica\_instance\_self\_link | The URI of the failover-replica instance |
 | failover-replica\_instance\_server\_ca\_cert | The CA certificate information used to connect to the failover-replica instance via SSL |
 | failover-replica\_instance\_service\_account\_email\_address | The service account email addresses assigned to the failover-replica instance |
-| generated\_user\_password | The auto generated default user password if not input password was provided |
 | instance\_connection\_name | The connection name of the master instance to be used in connection strings |
 | instance\_first\_ip\_address | The first IPv4 address of the addresses assigned for the master instance. |
 | instance\_ip\_address | The IPv4 address assigned for the master instance |

@@ -15,7 +15,6 @@
  */
 
 locals {
-  default_user_host        = "%"
   ip_configuration_enabled = "${length(keys(var.ip_configuration)) > 0 ? true : false}"
 
   ip_configurations = {
@@ -38,12 +37,11 @@ resource "google_sql_database_instance" "default" {
     ip_configuration            = ["${local.ip_configurations["${local.ip_configuration_enabled ? "enabled" : "disabled"}"]}"]
 
     disk_autoresize = "${var.disk_autoresize}"
-
-    disk_size      = "${var.disk_size}"
-    disk_type      = "${var.disk_type}"
-    pricing_plan   = "${var.pricing_plan}"
-    user_labels    = "${var.user_labels}"
-    database_flags = ["${var.database_flags}"]
+    disk_size       = "${var.disk_size}"
+    disk_type       = "${var.disk_type}"
+    pricing_plan    = "${var.pricing_plan}"
+    user_labels     = "${var.user_labels}"
+    database_flags  = ["${var.database_flags}"]
 
     location_preference {
       zone = "${var.region}-${var.zone}"
@@ -67,49 +65,22 @@ resource "google_sql_database_instance" "default" {
   }
 }
 
-resource "google_sql_database" "default" {
-  name       = "${var.db_name}"
+resource "google_sql_database" "databases" {
+  count      = "${length(var.databases)}"
   project    = "${var.project_id}"
-  instance   = "${google_sql_database_instance.default.name}"
-  charset    = "${var.db_charset}"
-  collation  = "${var.db_collation}"
-  depends_on = ["google_sql_database_instance.default"]
-}
-
-resource "google_sql_database" "additional_databases" {
-  count      = "${length(var.additional_databases)}"
-  project    = "${var.project_id}"
-  name       = "${lookup(var.additional_databases[count.index], "name")}"
-  charset    = "${lookup(var.additional_databases[count.index], "charset", "")}"
-  collation  = "${lookup(var.additional_databases[count.index], "collation", "")}"
+  name       = "${lookup(var.databases[count.index], "name")}"
+  charset    = "${lookup(var.databases[count.index], "charset", "")}"
+  collation  = "${lookup(var.databases[count.index], "collation", "")}"
   instance   = "${google_sql_database_instance.default.name}"
   depends_on = ["google_sql_database_instance.default"]
 }
 
-resource "random_id" "user-password" {
-  keepers = {
-    name = "${google_sql_database_instance.default.name}"
-  }
-
-  byte_length = 8
-  depends_on  = ["google_sql_database_instance.default"]
-}
-
-resource "google_sql_user" "default" {
-  name       = "${var.user_name}"
+resource "google_sql_user" "users" {
+  count      = "${length(var.users)}"
   project    = "${var.project_id}"
-  instance   = "${google_sql_database_instance.default.name}"
-  host       = "${var.user_host}"
-  password   = "${var.user_password == "" ? random_id.user-password.hex : var.user_password}"
-  depends_on = ["google_sql_database_instance.default"]
-}
-
-resource "google_sql_user" "additional_users" {
-  count      = "${length(var.additional_users)}"
-  project    = "${var.project_id}"
-  name       = "${lookup(var.additional_users[count.index], "name")}"
-  password   = "${lookup(var.additional_users[count.index], "password", random_id.user-password.hex)}"
-  host       = "${lookup(var.additional_users[count.index], "host", var.user_host)}"
+  name       = "${lookup(var.users[count.index], "name")}"
+  password   = "${lookup(var.users[count.index], "password")}"
+  host       = "${lookup(var.users[count.index], "host", var.user_host)}"
   instance   = "${google_sql_database_instance.default.name}"
   depends_on = ["google_sql_database_instance.default"]
 }

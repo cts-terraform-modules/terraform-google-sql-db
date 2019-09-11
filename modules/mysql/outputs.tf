@@ -116,9 +116,3 @@ output "failover-replica_instance_name" {
   value       = "${google_sql_database_instance.failover-replica.*.name}"
   description = "The instance name for the failover replica instance"
 }
-
-output "generated_user_password" {
-  description = "The auto generated default user password if not input password was provided"
-  value       = "${random_id.user-password.hex}"
-  sensitive   = true
-}

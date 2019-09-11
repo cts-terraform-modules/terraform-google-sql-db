@@ -322,7 +322,7 @@ variable "db_collation" {
   default     = ""
 }
 
-variable "additional_databases" {
+variable "databases" {
   description = "A list of databases to be created in your cluster"
   default     = []
 }
@@ -342,7 +342,7 @@ variable "user_password" {
   default     = ""
 }
 
-variable "additional_users" {
+variable "users" {
   description = "A list of users to be created in your cluster"
   default     = []
 }
