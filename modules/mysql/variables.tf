@@ -41,6 +41,7 @@ variable "tier" {
 
 variable "zone" {
   description = "The zone for the master instance, it should be something like: `a`, `c`."
+  default     = "a"
 }
 
 variable "activation_policy" {
