@@ -26,7 +26,7 @@ locals {
 
 resource "google_sql_database_instance" "default" {
   project          = var.project_id
-  name             = var.name
+  name             = var.master_suffix != "" ? var.name : "${var.name}-${var.master_suffix}"
   database_version = var.database_version
   region           = var.region
 

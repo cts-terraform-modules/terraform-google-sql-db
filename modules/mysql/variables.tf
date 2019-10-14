@@ -24,6 +24,12 @@ variable "name" {
   description = "The name of the Cloud SQL resources"
 }
 
+variable "master_suffix" {
+  type        = string
+  description = "Optional suffix to add to name of master DB"
+  default     = ""
+}
+
 // required
 variable "database_version" {
   description = "The database version to use"
