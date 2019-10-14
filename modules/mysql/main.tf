@@ -25,7 +25,7 @@ locals {
 
 resource "google_sql_database_instance" "default" {
   project          = var.project_id
-  name             = var.name
+  name             = var.master_suffix != "" ? var.name : "${var.name}-${var.master_suffix}"
   database_version = var.database_version
   region           = var.region
 
@@ -108,16 +108,11 @@ resource "google_sql_database" "databases" {
 }
 
 resource "google_sql_user" "users" {
-  count   = length(var.users)
-  project = var.project_id
-  name    = var.users[count.index]["name"]
-  password = lookup(
-    var.users[count.index],
-    "password",
-    random_id.user-password.hex,
-  )
+  count      = length(var.users)
+  project    = var.project_id
+  name       = var.users[count.index]["name"]
+  password   = var.users[count.index]["password"]
   host       = lookup(var.users[count.index], "host", var.user_host)
   instance   = google_sql_database_instance.default.name
   depends_on = [google_sql_database_instance.default]
 }
-
