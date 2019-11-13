@@ -33,16 +33,16 @@ resource "google_sql_database_instance" "default" {
   settings {
     tier                        = "${var.tier}"
     activation_policy           = "${var.activation_policy}"
-    authorized_gae_applications = ["${var.authorized_gae_applications}"]
-    backup_configuration        = ["${var.backup_configuration}"]
-    ip_configuration            = ["${local.ip_configurations["${local.ip_configuration_enabled ? "enabled" : "disabled"}"]}"]
+    authorized_gae_applications = "${var.authorized_gae_applications}"
+    backup_configuration        = "${var.backup_configuration}"
+    ip_configuration            = "${local.ip_configurations["${local.ip_configuration_enabled ? "enabled" : "disabled"}"]}"
 
     disk_autoresize = "${var.disk_autoresize}"
     disk_size       = "${var.disk_size}"
     disk_type       = "${var.disk_type}"
     pricing_plan    = "${var.pricing_plan}"
     user_labels     = "${var.user_labels}"
-    database_flags  = ["${var.database_flags}"]
+    database_flags  = "${var.database_flags}"
 
     location_preference {
       zone = "${var.region}-${var.zone}"
