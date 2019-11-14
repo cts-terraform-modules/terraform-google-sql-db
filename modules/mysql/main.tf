@@ -26,23 +26,53 @@ locals {
 
 resource "google_sql_database_instance" "default" {
   project          = var.project_id
-  name             = var.master_suffix != "" ? var.name : "${var.name}-${var.master_suffix}"
+  name             = var.name
   database_version = var.database_version
   region           = var.region
 
   settings {
-    tier                        = "${var.tier}"
-    activation_policy           = "${var.activation_policy}"
-    authorized_gae_applications = ["${var.authorized_gae_applications}"]
-    backup_configuration        = ["${var.backup_configuration}"]
-    ip_configuration            = ["${local.ip_configurations["${local.ip_configuration_enabled ? "enabled" : "disabled"}"]}"]
+    tier                        = var.tier
+    activation_policy           = var.activation_policy
+    authorized_gae_applications = var.authorized_gae_applications
+    dynamic "backup_configuration" {
+      for_each = [var.backup_configuration]
+      content {
+        binary_log_enabled = lookup(backup_configuration.value, "binary_log_enabled", null)
+        enabled            = lookup(backup_configuration.value, "enabled", null)
+        start_time         = lookup(backup_configuration.value, "start_time", null)
+      }
+    }
+    dynamic "ip_configuration" {
+      for_each = [local.ip_configurations[local.ip_configuration_enabled ? "enabled" : "disabled"]]
+      content {
+        ipv4_enabled    = lookup(ip_configuration.value, "ipv4_enabled", null)
+        private_network = lookup(ip_configuration.value, "private_network", null)
+        require_ssl     = lookup(ip_configuration.value, "require_ssl", null)
 
-    disk_autoresize = "${var.disk_autoresize}"
-    disk_size       = "${var.disk_size}"
-    disk_type       = "${var.disk_type}"
-    pricing_plan    = "${var.pricing_plan}"
-    user_labels     = "${var.user_labels}"
-    database_flags  = ["${var.database_flags}"]
+        dynamic "authorized_networks" {
+          for_each = lookup(ip_configuration.value, "authorized_networks", [])
+          content {
+            expiration_time = lookup(authorized_networks.value, "expiration_time", null)
+            name            = lookup(authorized_networks.value, "name", null)
+            value           = lookup(authorized_networks.value, "value", null)
+          }
+        }
+      }
+    }
+
+    disk_autoresize = var.disk_autoresize
+
+    disk_size    = var.disk_size
+    disk_type    = var.disk_type
+    pricing_plan = var.pricing_plan
+    user_labels  = var.user_labels
+    dynamic "database_flags" {
+      for_each = var.database_flags
+      content {
+        name  = lookup(database_flags.value, "name", null)
+        value = lookup(database_flags.value, "value", null)
+      }
+    }
 
     location_preference {
       zone = "${var.region}-${var.zone}"
