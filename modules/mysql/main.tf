@@ -145,7 +145,9 @@ resource "google_sql_database" "additional_databases" {
       name,
       charset,
       collation,
-      instance
+      instance,
+      id,
+      self_link
     ]
   }
 }
