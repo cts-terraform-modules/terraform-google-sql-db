@@ -138,6 +138,17 @@ resource "google_sql_database" "additional_databases" {
   collation  = lookup(each.value, "collation", null)
   instance   = google_sql_database_instance.default.name
   depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
+
+  lifecycle {
+    ignore_changes = [
+      project,
+      name,
+      charset,
+      collation,
+      instance,
+      deletion_protection
+    ]
+  }
 }
 
 resource "random_id" "user-password" {
