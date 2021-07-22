@@ -145,8 +145,7 @@ resource "google_sql_database" "additional_databases" {
       name,
       charset,
       collation,
-      instance,
-      deletion_protection
+      instance
     ]
   }
 }
